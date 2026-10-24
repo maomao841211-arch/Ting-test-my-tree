@@ -200,6 +200,7 @@
   .result-box { background: #eef6ec; border: 1px solid #bcd8b8; border-radius: 10px; padding: 12px; margin-top: 8px; }
   .result-box .h-main { text-align: center; font-size: 1.6rem; font-weight: bold; color: var(--accent-dark); margin: 2px 0 6px; }
   .result-box .h-sub { text-align: center; font-size: 0.92rem; color: #444; margin: 2px 0; }
+  .carbon-beef-illustration { display: block; width: 112px; max-width: 100%; height: auto; margin: 0 auto 4px; }
   .msg { font-size: 0.88rem; padding: 10px; border-radius: 8px; margin-top: 8px; }
   .msg.error { background: #fdecea; color: var(--warn); border: 1px solid #f5c6cb; }
   .msg.info { background: #eef2fb; color: #1a3a6b; border: 1px solid #c8d6ef; }
@@ -678,6 +679,12 @@
             <div id="carbon-error" class="msg error" style="display:none;margin-top:6px;"></div>
             <div id="carbon-result-box" class="result-box" style="display:none;margin-top:6px;">
               <div class="h-main" id="carbon-co2e">-- kg CO2e</div>
+              <img class="carbon-beef-illustration" src="./assets/beef-illustration.png" alt="牛肉圖案，示意生產牛肉的碳排放換算" width="1536" height="1024">
+              <div class="h-sub" id="carbon-beef-equivalent" aria-live="polite"></div>
+              <details class="mini">
+                <summary>牛肉碳排放換算說明</summary>
+                <div class="h-sub">生產 1 公斤牛肉大約產生 27 公斤二氧化碳當量（kgCO₂e）。相當牛肉重量（公斤）＝本次碳存量（kgCO₂e）÷ 27，為排放量的近似比較。</div>
+              </details>
               <details class="mini">
                 <summary>計算明細與公式依據</summary>
                 <div class="h-sub" id="carbon-h"></div>
@@ -1086,6 +1093,7 @@
     carbonError: document.getElementById("carbon-error"),
     carbonResultBox: document.getElementById("carbon-result-box"),
     carbonCo2e: document.getElementById("carbon-co2e"),
+    carbonBeefEquivalent: document.getElementById("carbon-beef-equivalent"),
     carbonH: document.getElementById("carbon-h"),
     carbonDbh: document.getElementById("carbon-dbh"),
     carbonD: document.getElementById("carbon-d"),
@@ -2678,6 +2686,9 @@
   // =========================================================
   // 算碳匯
   // =========================================================
+  // 使用者指定的近似排放係數：生產 1 公斤牛肉約產生 27 kgCO₂e。
+  var BEEF_CO2E_KG_PER_KG = 27;
+
   el.btnComputeCarbon.addEventListener("click", function () {
     showMsg(el.carbonError, "");
     el.carbonResultBox.style.display = "none";
@@ -2763,6 +2774,11 @@
       : "胸徑 DBH ≈ " + dbhCm.toFixed(1) + " cm(" + dbhSource + ")" + (isPalm ? "(僅記錄,未進入棕櫚公式)" : "");
 
     el.carbonCo2e.textContent = co2eKg.toFixed(2) + " kg CO2e";
+    var beefKg = co2eKg / BEEF_CO2E_KG_PER_KG;
+    el.carbonBeefEquivalent.textContent =
+      "這樣的碳存量，相當於生產約 " +
+      beefKg.toLocaleString("zh-TW", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+      " 公斤牛肉所產生的碳排放。";
     el.carbonH.textContent = "樹高 H ≈ " + H.toFixed(2) + " m";
     el.carbonDbh.textContent = dbhText;
     el.carbonD.textContent = dText;
