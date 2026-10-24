@@ -291,6 +291,10 @@
   .cam-overlay button { max-width: 320px; min-height: 52px; }
   .cam-overlay .msg { max-width: 320px; text-align: left; }
 
+  /* 初始畫面依參考圖保留上方黑色啟用區，下方量測表單可獨立捲動。 */
+  #tab-measure.is-starting #camera-section { flex: 0 0 51%; }
+  #tab-measure.is-starting #measure-controls { flex: 1 1 0; min-height: 0; max-height: none; }
+  #tab-measure.is-starting .camera-wrap { aspect-ratio: auto; }
   #measure-controls {
     flex: 1 0 auto;
     max-height: 56%;
@@ -579,7 +583,7 @@
             </div>
             <div>
               <label class="field-label" for="input-manual-dist">距離 D(公尺,選填)</label>
-              <input type="number" id="input-manual-dist" step="0.1" min="0.5" max="100">
+              <input type="number" id="input-manual-dist" step="0.1" min="0.5" max="100" placeholder="選填 0.5–100">
             </div>
           </div>
           <div class="eye-convert" id="eye-convert">
@@ -1235,7 +1239,9 @@
 
     // 首次使用:感測器與相機都還沒啟用才遮住畫面;焦距校正拍攝中不遮。
     // 只有感測器沒啟用(例如權限被拒)但相機可用 → 不遮相機,改顯示一行提示+重試鈕。
-    el.enableSection.style.display = (!sensorActive && !cameraReady && !fov) ? "flex" : "none";
+    var starting = !sensorActive && !cameraReady && !fov;
+    el.enableSection.style.display = starting ? "flex" : "none";
+    document.getElementById("tab-measure").classList.toggle("is-starting", starting);
     var hintOn = !sensorActive && cameraReady && !fov;
     el.sensorHint.style.display = hintOn ? "flex" : "none";
     el.sensorHintMsg.style.display = (hintOn && sensorErrText) ? "block" : "none";
@@ -1307,7 +1313,7 @@
         "tab-panel" + (names[i] === "settings" ? " scroll" : "") + (names[i] === name ? " active" : "");
       document.getElementById("tab-btn-" + names[i]).className = "tab-btn" + (names[i] === name ? " active" : "");
     }
-    if (name === "measure") updateDbhOverlayTop();
+    if (name === "measure") { updateMeasureView(); updateDbhOverlayTop(); }
     if (name === "measure" && cameraReady) {
       setupCanvasSize();
       if (mode === "live" && el.cameraVideo.paused) {
@@ -1709,15 +1715,8 @@
     showToast("眼高已設為 " + eye.toFixed(2) + " m");
   });
 
-  // ---- ① 樹高示意:預設收合;第一次使用自動展開一次並記住(cmytrees.seenHeightDemo) ----
-  (function initHeightDemo() {
-    try {
-      if (!localStorage.getItem("cmytrees.seenHeightDemo")) {
-        el.heightDemo.open = true;
-        localStorage.setItem("cmytrees.seenHeightDemo", "1");
-      }
-    } catch (e) {}
-  })();
+  // 與初始畫面參考圖一致：示意預設收合，使用者可自行點開。
+  el.heightDemo.open = false;
 
   // =========================================================
   // 相機:啟用、畫面繪製、凍結、拖曳兩線
