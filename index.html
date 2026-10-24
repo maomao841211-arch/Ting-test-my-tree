@@ -290,6 +290,8 @@
   .cam-overlay .ov-sub { font-size: 0.88rem; opacity: 0.92; line-height: 1.5; }
   .cam-overlay button { max-width: 320px; min-height: 52px; }
   .cam-overlay .msg { max-width: 320px; text-align: left; }
+  .startup-cal-hint { width: 100%; max-width: 320px; box-sizing: border-box; flex-wrap: wrap; justify-content: center; padding: 8px; border: 2px solid #ff8a80; }
+  .cam-overlay .startup-cal-hint button { width: auto; min-height: 44px; }
 
   #measure-controls {
     flex: 1 0 auto;
@@ -548,6 +550,10 @@
           <div class="cam-overlay" id="enable-section">
             <div class="ov-title">TwTrees 碳盤查</div>
             <div class="ov-sub">相機對準樹基與樹頂量樹高、拍樹幹量胸徑,算出單株碳匯並記錄座標。<br>碳匯為文獻公式教學估算,非正式碳權查證依據。</div>
+            <div class="cal-hint startup-cal-hint" id="startup-cal-hint" role="note">
+              <span>角度校正提醒：量測前請先直立拿好手機，進行水平校正；已有校正值也請確認角度是否正確。</span>
+              <button id="btn-startup-calibrate" type="button">前往校正</button>
+            </div>
             <button id="btn-enable-all" type="button">啟用相機與感測器</button>
             <div id="sensor-error" class="msg error" style="display:none;"></div>
             <div id="camera-msg" class="msg info" style="display:none;"></div>
@@ -1671,6 +1677,7 @@
     if (lv) lv.open = true;
   }
   el.btnGotoCalibrate.addEventListener("click", gotoCalibrate);
+  document.getElementById("btn-startup-calibrate").addEventListener("click", gotoCalibrate);
   el.btnOrientGoto.addEventListener("click", gotoCalibrate);
 
   // ---- 眼高「用身高換算」:身高 − 0.1 m,頁內輸入(不用 prompt/alert) ----
