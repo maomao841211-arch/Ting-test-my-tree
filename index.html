@@ -202,6 +202,12 @@
   .result-box .h-sub { text-align: center; font-size: 0.92rem; color: #444; margin: 2px 0; }
   .carbon-beef-illustration { display: block; width: 112px; max-width: 100%; height: auto; margin: 0 auto 4px; }
   .tree-achievement { margin-top: 10px; padding: 12px; text-align: center; border: 1px solid #d5dfcf; border-radius: 12px; background: #f6faf2; }
+  .medal-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 6px 0 12px; }
+  .medal-item { min-width: 0; }
+  .medal-item .tree-medal { width: min(100%, 96px); height: auto; aspect-ratio: 1; border-width: 5px; }
+  .medal-state { font-size: 0.75rem; line-height: 1.5; color: #6a6a6a; }
+  .medal-item.earned .medal-state { color: #1b5e20; font-weight: bold; }
+  .medal-item:not(.earned) .tree-medal { opacity: 0.6; }
   .tree-medal { --medal: #bd804e; --medal-light: #f8dfc2; position: relative; width: 112px; height: 112px; margin: 4px auto 10px; border-radius: 50%; border: 7px solid var(--medal); background: radial-gradient(circle at 35% 25%, #fff, var(--medal-light)); box-shadow: 0 3px 0 #0002, inset 0 0 0 2px #ffffffb3; }
   .tree-medal[data-tier="silver"] { --medal: #8e9da9; --medal-light: #e5edf3; }
   .tree-medal[data-tier="gold"] { --medal: #d8a51f; --medal-light: #fff0a4; }
@@ -719,9 +725,28 @@
             </div>
             <div id="save-tree-msg" class="msg info" style="display:none;margin-top:6px;"></div>
             <section class="tree-achievement" aria-label="碳匯測量高手徽章">
-              <div class="tree-medal" id="tree-medal" data-tier="bronze" hidden>
-                <img src="./assets/tree-badge-mascot.png" alt="Q 版微笑樹木徽章" width="112" height="112">
-                <span class="tree-medal-tier" id="tree-medal-tier"></span>
+              <div class="medal-gallery" id="tree-medal">
+                <div class="medal-item" data-required="1" data-label="銅牌">
+                  <div class="tree-medal" data-tier="bronze">
+                    <img src="./assets/earth-badge-mascot.png" alt="Q 版可愛地球銅牌徽章" width="112" height="112">
+                    <span class="tree-medal-tier">銅牌</span>
+                  </div>
+                  <div class="medal-state">1 棵 · 尚未解鎖</div>
+                </div>
+                <div class="medal-item" data-required="2" data-label="銀牌">
+                  <div class="tree-medal" data-tier="silver">
+                    <img src="./assets/earth-badge-mascot.png" alt="Q 版可愛地球銀牌徽章" width="112" height="112">
+                    <span class="tree-medal-tier">銀牌</span>
+                  </div>
+                  <div class="medal-state">2 棵 · 尚未解鎖</div>
+                </div>
+                <div class="medal-item" data-required="3" data-label="金牌">
+                  <div class="tree-medal" data-tier="gold">
+                    <img src="./assets/earth-badge-mascot.png" alt="Q 版可愛地球金牌徽章" width="112" height="112">
+                    <span class="tree-medal-tier">金牌</span>
+                  </div>
+                  <div class="medal-state">3 棵 · 尚未解鎖</div>
+                </div>
               </div>
               <h3 class="tree-achievement-title">碳匯測量高手</h3>
               <p class="tree-achievement-progress" id="tree-achievement-progress" role="status" aria-live="polite"></p>
@@ -2930,19 +2955,20 @@
 
   function renderTreeAchievement() {
     var count = trees.length;
-    var medal = document.getElementById("tree-medal");
+    document.querySelectorAll(".medal-item").forEach(function (item) {
+      var required = Number(item.dataset.required);
+      var earned = count >= required;
+      item.classList.toggle("earned", earned);
+      item.querySelector(".medal-state").textContent = required + " 棵 · " + (earned ? "已獲得" : "尚未解鎖");
+      item.setAttribute("aria-label", item.dataset.label + "，" + (earned ? "已獲得" : "尚未解鎖"));
+    });
     var progress = document.getElementById("tree-achievement-progress");
-    medal.hidden = count === 0;
     document.getElementById("btn-next-tree").hidden = count === 0;
     if (count === 0) {
       progress.textContent = "完成量測並儲存第 1 棵樹，即可獲得銅牌徽章！";
       return;
     }
-    var tier = count >= 3 ? "gold" : (count === 2 ? "silver" : "bronze");
     var label = count >= 3 ? "金牌" : (count === 2 ? "銀牌" : "銅牌");
-    medal.dataset.tier = tier;
-    medal.setAttribute("aria-label", "碳匯測量高手" + label + "徽章");
-    document.getElementById("tree-medal-tier").textContent = label;
     progress.textContent = "目前已儲存 " + count + " 棵樹，獲得" + label + "徽章！" +
       (count < 3 ? "再量測並儲存 1 棵樹，即可升級為" + (count === 1 ? "銀牌" : "金牌") + "。" : "太棒了，你已達成最高等級！");
   }
