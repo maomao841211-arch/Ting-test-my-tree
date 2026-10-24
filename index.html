@@ -635,7 +635,7 @@
         <!-- ② 胸徑 -->
         <div class="step-panel" id="dbh-section">
           <div id="dbh-camera-unavailable" class="msg info" style="display:none;">
-            相機不可用,已退回純角度模式:請直接在下方「手動輸入 DBH」填入以輪徑尺/皮尺實測的胸徑(公分)。
+            相機不可用,已退回純角度模式:請直接在下方「手動輸入樹木寬度(DBH)」填入以輪徑尺/皮尺實測的胸徑(公分)。
           </div>
           <div id="dbh-camera-block" style="display:none;">
             <div class="btn-row">
@@ -646,7 +646,7 @@
             <div class="dbh-readout" id="dbh-camera-estimate"></div>
             <div class="cam-note" style="margin-top:0;">拍攝後,在畫面上拖曳兩條線對齊胸高(約 1.3m)處左右樹皮邊緣。</div>
           </div>
-          <label class="field-label" for="input-manual-dbh">手動輸入 DBH(公分)— 填了會覆蓋相機估值</label>
+          <label class="field-label" for="input-manual-dbh">手動輸入樹木寬度(DBH)(公分)— 填了會覆蓋相機估值</label>
           <input type="number" id="input-manual-dbh" step="0.1" min="0" placeholder="例如 40">
         </div>
 
@@ -1193,8 +1193,8 @@
       text = "棕櫚類公式不需要 DBH,可直接按「計算碳匯」(有量到 DBH 也能填,僅供記錄)。";
     } else if (cameraDbhEstimateM === null && !hasValidManualDbh()) {
       text = cameraAvailable
-        ? "請按「拍攝樹幹」量胸徑,或直接於下方手動輸入 DBH。"
-        : "相機不可用,請於下方手動輸入 DBH(公分)。";
+        ? "請按「拍攝樹幹」量胸徑,或直接於下方手動輸入樹木寬度(DBH)。"
+        : "相機不可用,請於下方手動輸入樹木寬度(DBH)(公分)。";
     } else {
       text = "資料齊全,可以按「計算碳匯」看結果。";
     }
@@ -1256,8 +1256,8 @@
     el.dbhOverlay.style.display = mode === "freeze-dbh" ? "block" : "none";
     el.angleOverlay.style.display = frozen ? "none" : "block"; // 凍結時角度讀數無用,收起以免擋住底端拖曳把手
     el.dbhOverlay.textContent = cameraDbhEstimateM !== null
-      ? "DBH ≈ " + (cameraDbhEstimateM * 100).toFixed(1) + " cm"
-      : (D === null ? "DBH — 先完成①樹高" : "DBH —");
+      ? "樹木寬度(DBH) ≈ " + (cameraDbhEstimateM * 100).toFixed(1) + " cm"
+      : (D === null ? "樹木寬度(DBH) — 先完成①樹高" : "樹木寬度(DBH) —");
     updateDbhOverlayTop();
 
     // 步驟面板:焦距校正拍攝中只顯示 FOV 面板
@@ -2610,7 +2610,7 @@
     }
     cameraDbhEstimateM = dbhM;
     el.dbhCameraEstimate.textContent =
-      "相機估算 DBH ≈ " +
+      "相機估算樹木寬度(DBH) ≈ " +
       (dbhM * 100).toFixed(1) +
       " cm(D=" + D.toFixed(2) + "m,f_px=" + eff.fpx.toFixed(0) +
       "," + (eff.source === "calibrated" ? "已校正" : "未校正/粗估") + ")";
@@ -2713,7 +2713,7 @@
     } else if (!isPalm) {
       // 棕櫚公式(Frangi & Lugo)不吃 DBH,量測步驟允許跳過;
       // 其餘樹種的公式都需要 DBH,沒量到就不能算。
-      showMsg(el.carbonError, "請先完成胸徑量測(拍攝樹幹並調整兩線),或手動輸入 DBH(公分)。");
+      showMsg(el.carbonError, "請先完成胸徑量測(拍攝樹幹並調整兩線),或手動輸入樹木寬度(DBH)(公分)。");
       return;
     }
 
