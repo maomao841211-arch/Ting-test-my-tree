@@ -3167,7 +3167,7 @@
     showMsg(el.saveTreeMsg, "已儲存!可以繼續量下一棵樹。", "ok");
     showToast("已儲存!可以繼續量下一棵樹");
     setStep(3); // 儲存後顯示徽章，讓使用者選擇繼續量下一棵
-    document.getElementById("tree-medal").scrollIntoView({ block: "nearest" });
+    document.querySelector(".tree-achievement").scrollIntoView({ block: "end" });
     doSync(true); // 存檔後在背景自動上傳(已同意且在線才會實際送出)
   });
 
