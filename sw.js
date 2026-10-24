@@ -15,7 +15,7 @@
 // v10:新增 MongoDB 紀錄上傳(POST /api/records);/api/ 請求一律 network only,不經快取。
 "use strict";
 
-var CACHE_NAME = "twtrees-independent-shell-v6";
+var CACHE_NAME = "twtrees-independent-shell-v7";
 var APP_SHELL = [
   "./",
   "./index.html",

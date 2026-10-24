@@ -238,6 +238,9 @@
     background: rgba(0, 0, 0, 0.62); color: #ffd600; border-radius: 10px; padding: 4px 12px;
     font-size: 1.9rem; font-weight: bold; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
   }
+  .dbh-overlay-label { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.15; }
+  .dbh-overlay-label small { font-size: 0.55em; margin-top: 2px; }
+  .dbh-overlay-value { vertical-align: middle; }
   .camera-wrap canvas {
     position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none;
     z-index: 2;
@@ -533,7 +536,7 @@
             </div>
           </div>
 
-          <div class="dbh-overlay" id="dbh-overlay" style="display:none;"></div>
+          <div class="dbh-overlay" id="dbh-overlay" style="display:none;"><span class="dbh-overlay-label">樹木寬度<small>(DBH)</small></span> <span class="dbh-overlay-value" id="dbh-overlay-value"></span></div>
           <div class="angle-overlay" id="angle-overlay">
             <div class="angle-display" id="angle-display">—</div>
             <div class="angle-caption">仰角(往上為正)</div>
@@ -644,7 +647,7 @@
             </div>
             <div class="dbh-readout" id="dbh-px-readout">尚未拍攝</div>
             <div class="dbh-readout" id="dbh-camera-estimate"></div>
-            <div class="cam-note" style="margin-top:0;">拍攝後,在畫面上拖曳兩條線對齊胸高(約 1.3m)處左右樹皮邊緣。</div>
+            <div class="cam-note" style="margin-top:0;">拍攝後,在畫面上拖曳兩條線對齊胸高(約 1.3m)處左右樹皮邊緣，並將顯示的樹木寬度輸入橘色框框中。</div>
           </div>
           <label class="field-label" for="input-manual-dbh">手動輸入樹木寬度(DBH)(公分)— 填了會覆蓋相機估值</label>
           <input type="number" id="input-manual-dbh" step="0.1" min="0" placeholder="例如 40">
@@ -1255,9 +1258,9 @@
     el.banner.style.display = frozen ? "none" : "block";
     el.dbhOverlay.style.display = mode === "freeze-dbh" ? "block" : "none";
     el.angleOverlay.style.display = frozen ? "none" : "block"; // 凍結時角度讀數無用,收起以免擋住底端拖曳把手
-    el.dbhOverlay.textContent = cameraDbhEstimateM !== null
-      ? "樹木寬度(DBH) ≈ " + (cameraDbhEstimateM * 100).toFixed(1) + " cm"
-      : (D === null ? "樹木寬度(DBH) — 先完成①樹高" : "樹木寬度(DBH) —");
+    document.getElementById("dbh-overlay-value").textContent = cameraDbhEstimateM !== null
+      ? "≈ " + (cameraDbhEstimateM * 100).toFixed(1) + " cm"
+      : (D === null ? "— 先完成①樹高" : "—");
     updateDbhOverlayTop();
 
     // 步驟面板:焦距校正拍攝中只顯示 FOV 面板
