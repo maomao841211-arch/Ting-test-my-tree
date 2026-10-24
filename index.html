@@ -919,6 +919,7 @@
   var rawBeta = null;
   var zeroRef = 0;
   var calibrated = false;
+  var calibratedThisSession = false; // 儲存的校正值不略過本次啟用後的提醒
   var sensorActive = false;
 
   var capturedBaseDeg = null;
@@ -1240,9 +1241,9 @@
     el.sensorHintMsg.style.display = (hintOn && sensorErrText) ? "block" : "none";
     el.sensorHintMsg.textContent = sensorErrText;
     el.camFallback.style.display = cameraAvailable === false ? "block" : "none";
-    el.calHint.style.display = (sensorActive && cameraReady && !calibrated && !fov) ? "flex" : "none";
+    el.calHint.style.display = (sensorActive && cameraReady && (!calibrated || !calibratedThisSession) && !fov) ? "flex" : "none";
     // 舊校正疑似橫拿做的:與「尚未校正」合併成同一條提示,不重複顯示
-    el.calHintText.textContent = staleCal ? "先前的校正可能是橫拿做的,請直拿重新校正" : "尚未做水平校正,角度會不準";
+    el.calHintText.textContent = staleCal ? "先前的校正可能是橫拿做的,請直拿重新校正" : (calibrated ? "相機與感測器已啟用，請確認並重新校正水平角度" : "相機與感測器已啟用，請先完成水平角度校正");
     var frozenNow = mode === "freeze-dbh" || mode === "freeze-fov";
     el.orientHint.style.display = (orientHintOn() && !frozenNow) ? "flex" : "none"; // 凍結時收起
     // 凍結時遮罩一律不顯示(拖線不受影響);steep 不遮罩,只顯示一行提示
@@ -1564,6 +1565,7 @@
     }
     zeroRef = rawBeta;
     calibrated = true;
+    calibratedThisSession = true;
     staleCal = false;
     calOrient = curOrient;           // 記下校正當下的方向
     orientChangedSinceCal = false;
