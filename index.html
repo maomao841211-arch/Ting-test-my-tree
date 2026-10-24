@@ -201,6 +201,14 @@
   .result-box .h-main { text-align: center; font-size: 1.6rem; font-weight: bold; color: var(--accent-dark); margin: 2px 0 6px; }
   .result-box .h-sub { text-align: center; font-size: 0.92rem; color: #444; margin: 2px 0; }
   .carbon-beef-illustration { display: block; width: 112px; max-width: 100%; height: auto; margin: 0 auto 4px; }
+  .tree-achievement { margin-top: 10px; padding: 12px; text-align: center; border: 1px solid #d5dfcf; border-radius: 12px; background: #f6faf2; }
+  .tree-medal { --medal: #bd804e; --medal-light: #f8dfc2; position: relative; width: 112px; height: 112px; margin: 4px auto 10px; border-radius: 50%; border: 7px solid var(--medal); background: radial-gradient(circle at 35% 25%, #fff, var(--medal-light)); box-shadow: 0 3px 0 #0002, inset 0 0 0 2px #ffffffb3; }
+  .tree-medal[data-tier="silver"] { --medal: #8e9da9; --medal-light: #e5edf3; }
+  .tree-medal[data-tier="gold"] { --medal: #d8a51f; --medal-light: #fff0a4; }
+  .tree-medal img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .tree-medal-tier { position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); border-radius: 8px; padding: 2px 12px; white-space: nowrap; color: #242014; background: var(--medal-light); border: 1px solid var(--medal); font-size: 0.8rem; font-weight: bold; }
+  .tree-achievement-title { margin: 0 0 4px; color: var(--accent-dark); font-size: 1.15rem; font-weight: bold; }
+  .tree-achievement-progress { margin: 4px 0 8px; font-size: 0.88rem; color: #43553b; }
   .msg { font-size: 0.88rem; padding: 10px; border-radius: 8px; margin-top: 8px; }
   .msg.error { background: #fdecea; color: var(--warn); border: 1px solid #f5c6cb; }
   .msg.info { background: #eef2fb; color: #1a3a6b; border: 1px solid #c8d6ef; }
@@ -710,6 +718,16 @@
               <button id="btn-reset-all" class="danger" type="button" style="flex:1;">重設</button>
             </div>
             <div id="save-tree-msg" class="msg info" style="display:none;margin-top:6px;"></div>
+            <section class="tree-achievement" aria-label="碳匯測量高手徽章">
+              <div class="tree-medal" id="tree-medal" data-tier="bronze" hidden>
+                <img src="./assets/tree-badge-mascot.png" alt="Q 版微笑樹木徽章" width="112" height="112">
+                <span class="tree-medal-tier" id="tree-medal-tier"></span>
+              </div>
+              <h3 class="tree-achievement-title">碳匯測量高手</h3>
+              <p class="tree-achievement-progress" id="tree-achievement-progress" role="status" aria-live="polite"></p>
+              <div style="font-size:0.8rem;color:#666;">儲存 1 棵得銅牌 · 2 棵得銀牌 · 3 棵以上得金牌</div>
+              <button id="btn-next-tree" type="button" style="margin-top:8px;" hidden>繼續量下一棵</button>
+            </section>
           </div>
         </div>
 
@@ -2910,7 +2928,29 @@
     });
   }
 
+  function renderTreeAchievement() {
+    var count = trees.length;
+    var medal = document.getElementById("tree-medal");
+    var progress = document.getElementById("tree-achievement-progress");
+    medal.hidden = count === 0;
+    document.getElementById("btn-next-tree").hidden = count === 0;
+    if (count === 0) {
+      progress.textContent = "完成量測並儲存第 1 棵樹，即可獲得銅牌徽章！";
+      return;
+    }
+    var tier = count >= 3 ? "gold" : (count === 2 ? "silver" : "bronze");
+    var label = count >= 3 ? "金牌" : (count === 2 ? "銀牌" : "銅牌");
+    medal.dataset.tier = tier;
+    medal.setAttribute("aria-label", "碳匯測量高手" + label + "徽章");
+    document.getElementById("tree-medal-tier").textContent = label;
+    progress.textContent = "目前已儲存 " + count + " 棵樹，獲得" + label + "徽章！" +
+      (count < 3 ? "再量測並儲存 1 棵樹，即可升級為" + (count === 1 ? "銀牌" : "金牌") + "。" : "太棒了，你已達成最高等級！");
+  }
+
+  document.getElementById("btn-next-tree").addEventListener("click", function () { setStep(1); });
+
   function renderSummary() {
+    renderTreeAchievement();
     var total = 0;
     var hasLegacyRecord = false;
     for (var i = 0; i < trees.length; i++) {
@@ -3126,7 +3166,8 @@
     resetMeasurementState();
     showMsg(el.saveTreeMsg, "已儲存!可以繼續量下一棵樹。", "ok");
     showToast("已儲存!可以繼續量下一棵樹");
-    setStep(1); // 回到 ① 樹高,準備下一棵
+    setStep(3); // 儲存後顯示徽章，讓使用者選擇繼續量下一棵
+    document.getElementById("tree-medal").scrollIntoView({ block: "nearest" });
     doSync(true); // 存檔後在背景自動上傳(已同意且在線才會實際送出)
   });
 
