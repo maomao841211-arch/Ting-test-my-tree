@@ -678,6 +678,11 @@
             <div id="carbon-error" class="msg error" style="display:none;margin-top:6px;"></div>
             <div id="carbon-result-box" class="result-box" style="display:none;margin-top:6px;">
               <div class="h-main" id="carbon-co2e">-- kg CO2e</div>
+              <div class="h-sub" id="carbon-car-distance" aria-live="polite"></div>
+              <details class="mini">
+                <summary>汽車里程換算說明</summary>
+                <div class="h-sub">以常見暢銷車款 TOYOTA RAV4 1987 c.c. 為例，採用每人每公里碳排放量 0.173 kgCO₂。相當行駛里程＝本次碳存量（kgCO₂e）÷ 0.173，以一人搭乘換算。</div>
+              </details>
               <details class="mini">
                 <summary>計算明細與公式依據</summary>
                 <div class="h-sub" id="carbon-h"></div>
@@ -1086,6 +1091,7 @@
     carbonError: document.getElementById("carbon-error"),
     carbonResultBox: document.getElementById("carbon-result-box"),
     carbonCo2e: document.getElementById("carbon-co2e"),
+    carbonCarDistance: document.getElementById("carbon-car-distance"),
     carbonH: document.getElementById("carbon-h"),
     carbonDbh: document.getElementById("carbon-dbh"),
     carbonD: document.getElementById("carbon-d"),
@@ -2678,6 +2684,9 @@
   // =========================================================
   // 算碳匯
   // =========================================================
+  // 使用者指定：TOYOTA RAV4 1987 c.c.，每人每公里 0.173 kgCO₂。
+  var CAR_CO2_KG_PER_PERSON_KM = 0.173;
+
   el.btnComputeCarbon.addEventListener("click", function () {
     showMsg(el.carbonError, "");
     el.carbonResultBox.style.display = "none";
@@ -2763,6 +2772,11 @@
       : "胸徑 DBH ≈ " + dbhCm.toFixed(1) + " cm(" + dbhSource + ")" + (isPalm ? "(僅記錄,未進入棕櫚公式)" : "");
 
     el.carbonCo2e.textContent = co2eKg.toFixed(2) + " kg CO2e";
+    var carDistanceKm = co2eKg / CAR_CO2_KG_PER_PERSON_KM;
+    el.carbonCarDistance.textContent =
+      "這樣的碳存量，相當於一台汽車行駛約 " +
+      carDistanceKm.toLocaleString("zh-TW", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+      " 公里所產生的碳排放（一人搭乘）。";
     el.carbonH.textContent = "樹高 H ≈ " + H.toFixed(2) + " m";
     el.carbonDbh.textContent = dbhText;
     el.carbonD.textContent = dText;
